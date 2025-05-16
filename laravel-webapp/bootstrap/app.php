@@ -11,7 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+
+        $middleware->web(append: [
+            \App\Http\Middleware\LogAccess::class, // add custom middleware
+        ]);
+
+        $middleware->api(append: [
+            \App\Http\Middleware\LogAccess::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

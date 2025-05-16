@@ -5,6 +5,9 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
+use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\JsonFormatter;
+
 return [
 
     /*
@@ -125,6 +128,15 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'accesslog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/access.log'),
+            'level' => 'info',
+            'days' => 7, 
+            'formatter' => JsonFormatter::class,
+            'formatter_with_newlines' => true,
         ],
 
     ],

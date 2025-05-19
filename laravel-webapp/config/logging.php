@@ -131,14 +131,15 @@ return [
         ],
 
         'accesslog' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/access.log'),
+            'driver' => 'monolog',
+            'handler' => StreamHandler::class,
+            'with' => [
+                'stream' => 'php://stderr',
+            ],
             'level' => 'info',
-            'days' => 7, 
             'formatter' => JsonFormatter::class,
             'formatter_with_newlines' => true,
         ],
-
     ],
 
 ];

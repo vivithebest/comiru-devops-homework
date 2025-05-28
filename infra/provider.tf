@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "local" {
-    path = "infra/terraform.tfstate"
+    path = "state/terraform.tfstate"
   }
 }
 

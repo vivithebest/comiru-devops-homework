@@ -19,3 +19,9 @@ variable "vpc_cidr" {
   type        = string
   default     = "10.0.0.0/16"
 }
+
+variable "project_name" {
+  description = "A unique name for the project, used as a prefix for resources."
+  type        = string
+  default     = "devops-homework"
+}

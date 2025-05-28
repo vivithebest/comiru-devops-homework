@@ -1,0 +1,54 @@
+name: devops homework pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PHP_FPM_IMAGE_NAME: php-fpm
+  NGINX_IMAGE_NAME: nginx
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push PHP-FPM Docker image
+        id: build-push-php-fpm
+        uses: docker/build-push-action@v5
+        with:
+          context: ./laravel-webapp
+          file: ./laravel-webapp/docker/php-fpm/Dockerfile
+          push: true
+          tags: ${{ vars.ECR_REPO_URL }}:${{ env.PHP_FPM_IMAGE_NAME }}-latest,${{ vars.ECR_REPO_URL }}:${{ env.PHP_FPM_IMAGE_NAME }}-${{ github.sha }}
+
+      - name: Build and push Nginx Docker image
+        id: build-push-nginx
+        uses: docker/build-push-action@v5
+        with:
+          context: ./laravel-webapp
+          file: ./laravel-webapp/docker/nginx/Dockerfile
+          push: true
+          tags: ${{ vars.ECR_REPO_URL }}:${{ env.NGINX_IMAGE_NAME }}-latest,${{ vars.ECR_REPO_URL }}:${{ env.NGINX_IMAGE_NAME }}-${{ github.sha }}
+
+      - name: Output image URIs
+        run: |
+          echo "PHP-FPM Image URI: ${{ steps.login-ecr.outputs.registry }}/${{ env.PHP_FPM_IMAGE_NAME }}:${{ github.sha }}"
+          echo "Nginx Image URI: ${{ steps.login-ecr.outputs.registry }}/${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }}"

@@ -30,6 +30,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set short sha outputs
+        id: short-sha
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build and push PHP-FPM Docker image
         id: build-push-php-fpm
         uses: docker/build-push-action@v5
@@ -37,7 +41,7 @@ jobs:
           context: ./laravel-webapp
           file: ./laravel-webapp/docker/php-fpm/Dockerfile
           push: true
-          tags: ${{ vars.ECR_REPO_URL }}:${{ env.PHP_FPM_IMAGE_NAME }}-latest,${{ vars.ECR_REPO_URL }}:${{ env.PHP_FPM_IMAGE_NAME }}-${{ github.sha }}
+          tags: ${{ vars.ECR_REPO_URL }}:${{ env.PHP_FPM_IMAGE_NAME }}-latest,${{ vars.ECR_REPO_URL }}:${{ env.PHP_FPM_IMAGE_NAME }}-${{ steps.short-sha.outputs.sha_short }}
 
       - name: Build and push Nginx Docker image
         id: build-push-nginx
@@ -46,7 +50,7 @@ jobs:
           context: ./laravel-webapp
           file: ./laravel-webapp/docker/nginx/Dockerfile
           push: true
-          tags: ${{ vars.ECR_REPO_URL }}:${{ env.NGINX_IMAGE_NAME }}-latest,${{ vars.ECR_REPO_URL }}:${{ env.NGINX_IMAGE_NAME }}-${{ github.sha }}
+          tags: ${{ vars.ECR_REPO_URL }}:${{ env.NGINX_IMAGE_NAME }}-latest,${{ vars.ECR_REPO_URL }}:${{ env.NGINX_IMAGE_NAME }}-${{ steps.short-sha.outputs.sha_short }}
 
       - name: Output image URIs
         run: |

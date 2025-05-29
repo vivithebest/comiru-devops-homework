@@ -38,7 +38,7 @@ resource "aws_iam_access_key" "github_actions_ses" {
 
 # IAM roles for ECS tasks
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name_prefix = "${var.project_name}-ecs-task-execution-role-"
+  name_prefix = "${var.project_name}-ecs-task-exe-role-"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -57,7 +57,12 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   }
 }
 
-resource "aws_iam_policy" "ecs_task_execution_policy" {
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_default_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_policy" "ecs_task_execution_log_group_policy" {
   name_prefix = "${var.project_name}-ecs-task-execution-create-log-group-policy-"
   description = "Allows ECS task execution role to create CloudWatch Log Groups"
   policy = jsonencode({
@@ -79,12 +84,30 @@ resource "aws_iam_policy" "ecs_task_execution_policy" {
 }
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_create_log_group_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.ecs_task_execution_policy.arn
+  policy_arn = aws_iam_policy.ecs_task_execution_log_group_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+resource "aws_iam_policy" "ecs_task_execution_secrets_manager_policy" {
+  name_prefix = "${var.project_name}-ecs-task-execution-secrets-manager-policy-"
+  description = "Allows ECS task execution role to read from Secrets Manager"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:${var.project_name}-env-*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_secrets_manager_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policy_arn = aws_iam_policy.ecs_task_execution_secrets_manager_policy.arn
 }
 
 # resource "aws_iam_role" "ecs_task_role" {

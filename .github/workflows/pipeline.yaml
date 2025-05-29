@@ -78,7 +78,7 @@ jobs:
             --from "${{ vars.AWS_SES_SENDER_EMAIL }}" \
             --destination "ToAddresses=${{ vars.DESTINATION_RECEIVER }}" \
             --subject "[GitHub Actions] Pipeline Success: ( ${{ github.repository }} - ${{ github.run_id }})" \
-            --text "The ${{ github.repository }} pipeline on branch ${{ github.ref_name }} was successful.\n\nCommit: ${{ github.sha }}\nLink to Pipeline: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            --html "The ${{ github.repository }} pipeline on branch ${{ github.ref_name }} was successful.<br><br>Commit: ${{ github.sha }}<br>Link to Pipeline: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
   notify-failure:
     name: Pipeline Failure Notifications
@@ -102,4 +102,4 @@ jobs:
             --from "${{ vars.AWS_SES_SENDER_EMAIL }}" \
             --destination "ToAddresses=${{ vars.DESTINATION_RECEIVER }}" \
             --subject "[GitHub Actions] Pipeline Failure: (${{ github.repository }} - ${{ github.run_id }} )" \
-            -text "The ${{ github.repository }} pipeline on branch ${{ github.ref_name }} has failed.\n\nCommit: ${{ github.sha }}\nLink to pipeline: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nPlease check the pipeline logs for details."
+            --html "The ${{ github.repository }} pipeline on branch ${{ github.ref_name }} has failed.<br><br>Commit: ${{ github.sha }}<br>Link to pipeline: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}<br>Please check the pipeline logs for details."

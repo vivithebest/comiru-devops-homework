@@ -68,15 +68,15 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_SES_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Send success email via SES
         if: success()
         run: |
           aws ses send-email \
-            --region ${{ env.AWS_REGION }} \
-            --from "${{ env.AWS_SES_SENDER_EMAIL }}" \
-            --destination "${{ env.DESTINATION_RECEIVER }}" \
+            --region ${{ secrets.AWS_REGION }} \
+            --from "${{ vars.AWS_SES_SENDER_EMAIL }}" \
+            --destination "ToAddresses=${{ vars.DESTINATION_RECEIVER }}" \
             --subject "[GitHub Actions] Pipeline Success: ( ${{ github.repository }} - ${{ github.run_id }})" \
             --text "The ${{ github.repository }} pipeline on branch ${{ github.ref_name }} was successful.\n\nCommit: ${{ github.sha }}\nLink to Pipeline: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
@@ -84,8 +84,8 @@ jobs:
         if: failure()
         run: |
           aws ses send-email \
-            --region ${{ env.AWS_REGION }} \
-            --from "${{ env.AWS_SES_SENDER_EMAIL }}" \
-            --destination "${{ env.DESTINATION_RECEIVER }}" \
+            --region ${{ secrets.AWS_REGION }} \
+            --from "${{ vars.AWS_SES_SENDER_EMAIL }}" \
+            --destination "ToAddresses=${{ vars.DESTINATION_RECEIVER }}" \
             --subject "[GitHub Actions] Pipeline Failure: (${{ github.repository }} - ${{ github.run_id }} )" \
             -text "The ${{ github.repository }} pipeline on branch ${{ github.ref_name }} has failed.\n\nCommit: ${{ github.sha }}\nLink to pipeline: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nPlease check the pipeline logs for details."

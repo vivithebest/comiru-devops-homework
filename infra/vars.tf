@@ -31,3 +31,15 @@ variable "domain_name" {
   type        = string
   default     = "v2comiru.click"
 }
+
+variable "ecs_task_cpu" {
+  description = "CPU units for the ECS task"
+  type        = number
+  default     = 256
+}
+
+variable "ecs_task_memory" {
+  description = "Memory in MiB for the ECS task"
+  type        = number
+  default     = 512
+}

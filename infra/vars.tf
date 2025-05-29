@@ -25,3 +25,9 @@ variable "project_name" {
   type        = string
   default     = "devops-homework"
 }
+
+variable "domain_name" {
+  description = "Domain name for the application"
+  type        = string
+  default     = "v2comiru.click"
+}

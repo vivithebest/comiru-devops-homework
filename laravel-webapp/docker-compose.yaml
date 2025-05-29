@@ -7,9 +7,10 @@ services:
       dockerfile: ./docker/nginx/Dockerfile
     ports:
       - "80:80"
-    volumes:
-      - .:/var/www/html
-      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    environment:
+      - PHP_FPM_HOST=php-fpm-app
+    # volumes:
+      # - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php-fpm-app
     networks:
@@ -20,7 +21,7 @@ services:
       context: ./
       dockerfile: ./docker/php-fpm/Dockerfile
     volumes:
-      - .:/var/www/html
+      - .env:/var/www/html/.env
     expose:
       - "9000"
     environment:

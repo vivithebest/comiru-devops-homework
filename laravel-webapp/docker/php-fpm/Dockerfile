@@ -1,9 +1,9 @@
 # --- Stage 1: Builder ---
-FROM composer:2.7 as builder
+FROM composer:2.8 as builder
 
 WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist
+COPY . .
+RUN composer install
 
 # --- Stage 2: PHP-FPM Runtime ---
 FROM php:8.2-fpm-alpine
@@ -23,7 +23,8 @@ WORKDIR /var/www/html
 COPY . .
 COPY --from=builder /app/vendor /var/www/html/vendor
 
-RUN chown -R www-data:www-data /var/www/html \
+RUN mv .env.example .env \
+    && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 

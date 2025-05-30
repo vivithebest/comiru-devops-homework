@@ -151,3 +151,36 @@ resource "aws_ecs_service" "app" {
     Name = "${var.project_name}-ecs-service"
   }
 }
+
+# ecs service auto scaling
+resource "aws_appautoscaling_target" "ecs_service" {
+  max_capacity       = var.ecs_autoscale_max_count
+  min_capacity       = var.ecs_desired_count
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.app.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_scheduled_action" "scale_up" {
+  name               = "${var.project_name}-scale-up"
+  resource_id        = aws_appautoscaling_target.ecs_service.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_service.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_service.service_namespace
+  schedule           = "cron(10 8 * * ? *)" # JST time 17:00
+  scalable_target_action {
+    min_capacity = var.ecs_autoscale_max_count
+    max_capacity = var.ecs_autoscale_max_count
+  }
+}
+
+resource "aws_appautoscaling_scheduled_action" "scale_down" {
+  name               = "${var.project_name}-scale-down"
+  resource_id        = aws_appautoscaling_target.ecs_service.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_service.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_service.service_namespace
+  schedule           = "cron(59 8 * * ? *)" # JST time 17:59
+  scalable_target_action {
+    min_capacity = var.ecs_desired_count
+    max_capacity = var.ecs_desired_count
+  }
+}

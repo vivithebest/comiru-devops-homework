@@ -47,5 +47,11 @@ variable "ecs_task_memory" {
 variable "ecs_desired_count" {
   description = "Desired count for the ECS service"
   type        = number
+  default     = 1
+}
+
+variable "ecs_autoscale_max_count" {
+  description = "Max count for the ECS service"
+  type        = number
   default     = 2
 }

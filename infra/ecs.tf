@@ -75,6 +75,8 @@ resource "aws_ecs_task_definition" "app" {
           name  = "DB_CONNECTION"
           value = "sqlite"
         },
+      ]
+      secrets = [
         {
           name      = "APP_KEY"
           valueFrom = data.aws_secretsmanager_secret.app_key.arn

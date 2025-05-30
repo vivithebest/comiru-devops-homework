@@ -25,7 +25,6 @@ COPY --from=builder /app/vendor /var/www/html/vendor
 
 RUN mv .env.example .env \
     && touch database/database.sqlite \
-    && php artisan migrate \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
@@ -34,4 +33,4 @@ ENV LOG_CHANNEL=stderr
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+CMD ["sh", "-c", "php artisan migrate --force && php-fpm"]

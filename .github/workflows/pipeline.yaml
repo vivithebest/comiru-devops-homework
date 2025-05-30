@@ -1,10 +1,15 @@
 name: devops homework pipeline
 
+# Run Only Push or Pull request on main branch and laravel-webapp/ Changes
 on:
   push:
     branches: [main]
+    paths:
+      - 'laravel-webapp/*'
   pull_request:
     branches: [main]
+    paths:
+      - 'laravel-webapp/*'
 
 env:
   PHP_FPM_IMAGE_NAME: php-fpm

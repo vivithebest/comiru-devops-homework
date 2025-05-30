@@ -1,5 +1,5 @@
 # --- Stage 1: Builder ---
-FROM composer:2.8 as builder
+FROM composer:2.8 AS builder
 
 WORKDIR /app
 COPY . .
@@ -24,6 +24,8 @@ COPY . .
 COPY --from=builder /app/vendor /var/www/html/vendor
 
 RUN mv .env.example .env \
+    && touch database/database.sqlite \
+    && php artisan migrate \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache

@@ -43,3 +43,9 @@ variable "ecs_task_memory" {
   type        = number
   default     = 512
 }
+
+variable "ecs_desired_count" {
+  description = "Desired count for the ECS service"
+  type        = number
+  default     = 2
+}

@@ -5,11 +5,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'laravel-webapp/*'
+      - 'laravel-webapp/**/*'
   pull_request:
     branches: [main]
     paths:
-      - 'laravel-webapp/*'
+      - 'laravel-webapp/**/*'
 
 env:
   PHP_FPM_IMAGE_NAME: php-fpm

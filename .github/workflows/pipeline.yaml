@@ -79,8 +79,6 @@ jobs:
         run: |
           aws ecs update-service \
             --region ${{ secrets.AWS_REGION }} \
-            --cluster ${{ vars.ECS_CLUSTER_NAME }} \
-            --service ${{ vars.ECS_SERVICE_NAME }} \
             --force-new-deployment 
 
   notify-success:
